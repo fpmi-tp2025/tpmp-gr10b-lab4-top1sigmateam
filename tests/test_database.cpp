@@ -8,20 +8,33 @@
 
      static int init_suite(void) {
          db = connect_to_db("database.db");
-         if (!db) return -1;
+         if (!db) {
+             return -1;
+         }
          std::ifstream sql_file("setup.sql");
+         if (!sql_file.is_open()) {
+             sqlite3_close(db);
+             db = nullptr;
+             return -1;
+         }
          std::string sql((std::istreambuf_iterator<char>(sql_file)), std::istreambuf_iterator<char>());
          execute_query(db, sql, nullptr, nullptr);
          return 0;
      }
 
      static int clean_suite(void) {
-         if (db) sqlite3_close(db);
-         db = nullptr;
+         if (db) {
+             sqlite3_close(db);
+             db = nullptr;
+         }
          return 0;
      }
 
      static void test_insert_blob(void) {
+         if (!db) {
+             CU_FAIL("Database not initialized");
+             return;
+         }
          std::vector<char> blob_data = { 'd', 'a', 't', 'a' };
          insert_blob(db, "Products", "image", "name", "Test Image", blob_data);
          std::vector<char> retrieved = retrieve_blob(db, "Products", "image", "name = 'Test Image'");
@@ -32,6 +45,10 @@
      }
 
      static void test_execute_query(void) {
+         if (!db) {
+             CU_FAIL("Database not initialized");
+             return;
+         }
          execute_query(db, "INSERT INTO Brokers (last_name, address, birth_year) VALUES ('Test', 'Test Address', 1990);", nullptr, nullptr);
          sqlite3_stmt* stmt;
          const char* sql = "SELECT COUNT(*) FROM Brokers WHERE last_name = 'Test';";
@@ -44,6 +61,10 @@
      }
 
      static void test_retrieve_blob_empty(void) {
+         if (!db) {
+             CU_FAIL("Database not initialized");
+             return;
+         }
          std::vector<char> retrieved = retrieve_blob(db, "Products", "image", "name = 'Nonexistent'");
          CU_ASSERT_TRUE(retrieved.empty());
      }

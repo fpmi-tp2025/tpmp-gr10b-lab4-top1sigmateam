@@ -6,26 +6,42 @@
 
      static int init_suite(void) {
          db = connect_to_db("database.db");
-         if (!db) return -1;
+         if (!db) {
+             return -1;
+         }
          execute_query(db, "INSERT OR IGNORE INTO users (username, password, role) VALUES ('admin', 'admin123', 'admin');", nullptr, nullptr);
          return 0;
      }
 
      static int clean_suite(void) {
-         if (db) sqlite3_close(db);
-         db = nullptr;
+         if (db) {
+             sqlite3_close(db);
+             db = nullptr;
+         }
          return 0;
      }
 
      static void test_authenticate_success(void) {
+         if (!db) {
+             CU_FAIL("Database not initialized");
+             return;
+         }
          CU_ASSERT_TRUE(authenticate(db, "admin", "admin123"));
      }
 
      static void test_authenticate_failure(void) {
+         if (!db) {
+             CU_FAIL("Database not initialized");
+             return;
+         }
          CU_ASSERT_FALSE(authenticate(db, "admin", "wrongpass"));
      }
 
      static void test_authenticate_nonexistent_user(void) {
+         if (!db) {
+             CU_FAIL("Database not initialized");
+             return;
+         }
          CU_ASSERT_FALSE(authenticate(db, "nonexistent", "password"));
      }
 
