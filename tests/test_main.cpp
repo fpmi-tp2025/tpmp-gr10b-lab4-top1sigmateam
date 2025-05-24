@@ -1,7 +1,7 @@
 #include <CUnit/Basic.h>
      #include <CUnit/CUnit.h>
-     #include "test_auth.c"
-     #include "test_database.c"
+     #include "test_auth.cpp"
+     #include "test_database.cpp"
 
      int main() {
          if (CUE_SUCCESS != CU_initialize_registry()) {
