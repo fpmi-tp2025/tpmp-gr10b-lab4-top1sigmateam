@@ -18,6 +18,6 @@ add_executable(app src/main.cpp src/database.cpp src/auth.cpp)
 target_link_libraries(app ${SQLITE3_LIBRARY})
 
 include(CTest)
-add_executable(tests tests/test_main.c tests/test_auth.c tests/test_database.c)
+add_executable(tests tests/test_main.cpp tests/test_auth.cpp tests/test_database.cpp)
 target_link_libraries(tests ${SQLITE3_LIBRARY} ${CUNIT_LIBRARY})
 add_test(NAME AllTests COMMAND tests)
